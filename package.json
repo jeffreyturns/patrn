@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "patrn",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,11 +7,19 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint . --ignore-path .gitignore --ext .js,.cjs,.ts,.vue",
+    "lint:fix": "eslint . --fix --ignore-path .gitignore --ext .js,.cjs,.ts,.vue"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.14.2",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/eslint-module": "^4.1.0",
+    "@stylistic/eslint-plugin": "^1.6.3",
+    "eslint": "^8.57.0",
+    "eslint-plugin-tailwindcss": "^3.14.3",
+    "eslint-plugin-vue": "^9.22.0",
     "nuxt": "^3.10.3"
   }
 }

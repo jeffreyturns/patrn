@@ -1,0 +1,1 @@
+export const useRenderMode = () => useState<'preview' | 'render'>('render-mode', () => 'preview')
