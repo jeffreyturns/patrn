@@ -1,6 +1,8 @@
-# Nuxt UI Minimal Starter
+![nuxt-ui-landing-social-card](https://raw.githubusercontent.com/jeffreyturns/patrn/main/public/social-card.png)
 
-Look at [Nuxt docs](https://nuxt.com/docs/getting-started/introduction) and [Nuxt UI docs](https://ui.nuxt.com) to learn more.
+# Patrn - Create beautiful patterns with mathematics
+
+[Visit Site](https://patrn.vercel.app/)
 
 ## Setup
 
