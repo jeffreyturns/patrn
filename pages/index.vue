@@ -14,15 +14,6 @@ const customRenderSize = useCustomRenderSize()
 
 const debouncedFExpression = useDebounce(renderFunction, 500)
 
-useSeoMeta({
-  title: 'Patrn - create beautiful patterns with mathematics',
-  ogTitle: 'Patrn - create beautiful patterns with mathematics',
-  // eslint-disable-next-line @stylistic/max-len
-  description: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.',
-  // eslint-disable-next-line @stylistic/max-len
-  ogDescription: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.'
-})
-
 async function draw () {
   const startTime = performance.now()
   const canvas = await canvasRef.value
