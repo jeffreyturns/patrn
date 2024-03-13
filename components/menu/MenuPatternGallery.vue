@@ -27,6 +27,7 @@ function chooseFunction (func: string) {
 
 <template>
   <UButton variant="solid" size="lg" :color="gallery ? 'primary' : 'gray'" icon="i-heroicons-photo" @click="gallery = true" />
+
   <USlideover v-model="gallery">
     <div class="flex-1 space-y-3 overflow-auto p-4">
       <template v-for="func in list" :key="func">

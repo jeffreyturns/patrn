@@ -1,18 +1,10 @@
-<template>
-  <div class="overflow-hidden rounded-md ring-1 ring-gray-200 dark:ring-gray-800">
-    <canvas ref="previewRef" class="h-48 w-full" />
-  </div>
-  <div class="mt-2 font-mono font-bold">
-    {{ props.function }}
-  </div>
-</template>
-
 <script lang="ts" setup>
-const previewRef = ref(null)
+const previewRef = ref<HTMLCanvasElement | null>(null)
 
 const props = defineProps<{ function: string }>()
 
-let f = (x, y, w, h) => 255
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const f = ref((x: number, y: number, w: number, h: number) => 255)
 
 function draw () {
   const canvas = previewRef.value
@@ -39,8 +31,8 @@ function draw () {
       let value
 
       try {
-        value = f(x, y, canvas.width, canvas.height) % 256
-      } catch (e) {
+        value = f.value(x, y, canvas.width, canvas.height) % 256
+      } catch (e: any) {
         throw new Error(e.message)
       }
 
@@ -55,7 +47,18 @@ function draw () {
 }
 
 onMounted(() => {
-  f = new Function('x', 'y', 'w', 'h', `return ${props.function}`)
+  // @ts-expect-error
+  // eslint-disable-next-line no-new-func
+  f.value = new Function('x', 'y', 'w', 'h', `return ${props.function}`)
   draw()
 })
 </script>
+
+<template>
+  <div class="overflow-hidden rounded-md ring-1 ring-gray-200 dark:ring-gray-800">
+    <canvas ref="previewRef" class="h-48 w-full" />
+  </div>
+  <div class="mt-2 font-mono font-bold">
+    {{ props.function }}
+  </div>
+</template>
