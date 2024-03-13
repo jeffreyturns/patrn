@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   devtools: { enabled: true },
   modules: ['@nuxt/ui'],
   app: { head: { htmlAttrs: { class: 'ui-scrollbars' } } },
