@@ -1,31 +1,23 @@
+<!-- eslint-disable @stylistic/max-len -->
 <script setup lang="ts">
 useHead({
   meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { property: 'title', content: 'Patrn - create beautiful patterns with mathematics' },
+    { name: 'description', content: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.' },
+    { property: 'og:title', content: 'Patrn - create beautiful patterns with mathematics' },
+    { property: 'og:url', content: 'https://patrn.vercel.app' },
+    { property: 'og:description', content: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.' },
+    { property: 'og:image', content: 'https://patrn.vercel.app/social-card.png' },
+    { name: 'twitter:title', content: 'Patrn - create beautiful patterns with mathematics' },
+    { name: 'twitter:description', content: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.' },
+    { name: 'twitter:image', content: 'https://patrn.vercel.app/social-card.png' },
+    { name: 'twitter:card', content: 'summary_large_image' }
   ],
   link: [
     { rel: 'icon', href: '/favicon.ico' }
   ],
   htmlAttrs: { lang: 'en' }
-})
-
-const meta = {
-  title: 'Patrn - create beautiful patterns with mathematics',
-  // eslint-disable-next-line @stylistic/max-len
-  description: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.'
-}
-
-useSeoMeta({
-  title: meta.title,
-  ogTitle: meta.title,
-  ogUrl: 'https://patrn.vercel.app',
-  description: meta.description,
-  ogDescription: meta.description,
-  ogImage: 'https://patrn.vercel.app/social-card.png',
-  twitterTitle: meta.title,
-  twitterDescription: meta.description,
-  twitterImage: 'https://patrn.vercel.app/social-card.png',
-  twitterCard: 'summary_large_image'
 })
 </script>
 
