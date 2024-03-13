@@ -4,7 +4,10 @@
   <UCard class="fixed left-0 top-0 m-4">
     <div class="flex items-center space-x-3">
       <span class="font-mono text-sm">f(x, y, w, h) => </span>
-      <UInput v-model="fExpression" />
+      <UInput v-model="renderFunction" />
+    </div>
+    <div class="mt-3 font-mono tracking-tight">
+      render time: {{ executionTime }} ms
     </div>
   </UCard>
   <div class="fixed bottom-0 left-0 m-4 max-h-60 w-64 space-y-3">
@@ -12,31 +15,35 @@
       <UAlert v-for="it in errorMessages" :key="it + Date.now()" color="red" :title="it" />
     </TransitionGroup>
   </div>
-  <!-- <UButton class="fixed top-0 right-0 m-4" variant="solid" color="gray" size="lg" icon="i-heroicons-bars-3"  /> -->
-  <AppMenu @rerender="draw()" @download="saveImage()" />
+  <AppMenu @rerender="draw()" @download="saveImage()" @apply="applySettings()" />
 </template>
 
-<script setup>
-const canvasRef = ref(null)
+<script setup lang="ts">
+const canvasRef = ref<HTMLCanvasElement | null>(null)
 const canvasHeight = ref(100)
 const canvasWidth = ref(100)
-const fExpression = ref('((x + y) % 200 < Math.random() * 100) ? 120 : 35')
-const debouncedFExpression = useDebounce(fExpression, 500)
-const errorMessages = ref([])
+const errorMessages = ref<string[]>([])
+const executionTime = ref(0)
 
-let f = (x, y, w, h) => 255
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let f = (x: number, y: number, w: number, h: number) => 255
 
+const renderFunction = useRenderFunction()
 const renderMode = useRenderMode()
+const customRenderSize = useCustomRenderSize()
 
-function draw () {
-  const canvas = canvasRef.value
+const debouncedFExpression = useDebounce(renderFunction, 500)
+
+async function draw () {
+  const startTime = performance.now()
+  const canvas = await canvasRef.value
 
   if (!canvas) {
-    errorMessages.value = ['Canvas not available']
+    errorMessages.value.push('Canvas not available')
     return
   }
 
-  const ctx = canvas.getContext('2d', { willReadFrequently: true })
+  const ctx = await canvas.getContext('2d', { willReadFrequently: true })
 
   if (!ctx) {
     errorMessages.value = ['Context not available']
@@ -58,7 +65,7 @@ function draw () {
 
       try {
         value = f(x, y, canvas.width, canvas.height) % 256
-      } catch (e) {
+      } catch (e: any) {
         errorMessages.value.push(e.message)
         throw new Error(e.message)
       }
@@ -71,15 +78,20 @@ function draw () {
   }
 
   ctx.putImageData(imageData, 0, 0)
+  await new Promise(resolve => setTimeout(resolve))
+  const endTime = performance.now()
+
+  executionTime.value = Math.floor(endTime - startTime)
 }
 
 watch(
   () => debouncedFExpression.value,
   () => {
     try {
-      f = new Function('x', 'y', 'w', 'h', `return ${fExpression.value}`)
+      // eslint-disable-next-line no-new-func
+      f = new Function('x', 'y', 'w', 'h', `return ${renderFunction.value}`)
       draw()
-    } catch (e) {
+    } catch (e: any) {
       errorMessages.value.push(e.message)
     }
   }
@@ -101,29 +113,23 @@ function saveImage () {
 }
 
 onMounted(() => {
+  applySettings()
+})
+
+function applySettings () {
   if (renderMode.value === 'preview') {
     canvasHeight.value = window.innerHeight
     canvasWidth.value = window.innerWidth
-  } else {
+  }
+  if (renderMode.value === 'render') {
     canvasHeight.value = window.screen.height
     canvasWidth.value = window.screen.width
   }
-})
-
-watch(renderMode, () => {
-  if (renderMode.value === 'preview') {
-    canvasHeight.value = window.innerHeight
-    canvasWidth.value = window.innerWidth
-  } else {
-    canvasHeight.value = window.screen.height
-    canvasWidth.value = window.screen.width
+  if (renderMode.value === 'custom') {
+    canvasHeight.value = customRenderSize.value.height
+    canvasWidth.value = customRenderSize.value.width
   }
-})
-
-// window.addEventListener("resize", () => {
-//     canvasHeight.value = window.innerHeight;
-//     canvasWidth.value = window.innerWidth;
-// });
+}
 
 watch(
   () => errorMessages.value.length,
