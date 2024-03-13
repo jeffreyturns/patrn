@@ -9,15 +9,21 @@ useHead({
   htmlAttrs: { lang: 'en' }
 })
 
-useSeoMeta({
+const meta = {
   title: 'Patrn - create beautiful patterns with mathematics',
-  ogTitle: 'Patrn - create beautiful patterns with mathematics',
+  // eslint-disable-next-line @stylistic/max-len
+  description: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.'
+}
+
+useSeoMeta({
+  title: meta.title,
+  ogTitle: meta.title,
   ogUrl: 'https://patrn.vercel.app',
-  description: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.',
-  ogDescription: 'Discover the magic of transforming mathematical formulas into stunning visual patterns with Patrn. Explore the intersection of art and mathematics, where sophistication meets simplicity.',
+  description: meta.description,
+  ogDescription: meta.description,
   ogImage: 'https://patrn.vercel.app/social-card.png',
-  twitterTitle: '[twitter:title]',
-  twitterDescription: '[twitter:description]',
+  twitterTitle: meta.title,
+  twitterDescription: meta.description,
   twitterImage: 'https://patrn.vercel.app/social-card.png',
   twitterCard: 'summary_large_image'
 })
