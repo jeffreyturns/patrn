@@ -2,54 +2,50 @@
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const canvasHeight = ref(100)
 const canvasWidth = ref(100)
-const errorMessages = ref<string[]>([])
-const executionTime = ref(0)
+const errorMessage = ref('')
+const renderTime = ref(0)
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const f = ref((x: number, y: number, w: number, h: number) => 255)
+let f: (x: number, y: number, w: number, h: number) => number
 
 const renderFunction = useRenderFunction()
 const renderMode = useRenderMode()
 const customRenderSize = useCustomRenderSize()
 
-const debouncedFExpression = useDebounce(renderFunction, 500)
+const debouncedFExpression = useDebounce(renderFunction)
 
-async function draw () {
+function draw () {
   const startTime = performance.now()
-  const canvas = await canvasRef.value
 
+  const canvas = canvasRef.value
   if (!canvas) {
-    errorMessages.value.push('Canvas not available')
+    errorMessage.value = 'Canvas not available'
     return
   }
 
-  const ctx = await canvas.getContext('2d', { willReadFrequently: true })
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
 
   if (!ctx) {
-    errorMessages.value = ['Context not available']
+    errorMessage.value = 'Context not available'
     return
   }
-
-  errorMessages.value = []
 
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const imageData = ctx.createImageData(canvas.width, canvas.height)
   const data = imageData.data
 
-  for (let x = 0; x < canvas.width; x++) {
-    for (let y = 0; y < canvas.height; y++) {
-      const i = (y * canvas.width + x) * 4
+  const getPixelIndex = (x: number, y: number) => (y * canvas.width + x) * 4
 
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const i = getPixelIndex(x, y)
       let value
-
       try {
-        value = f.value(x, y, canvas.width, canvas.height) % 256
+        value = f(x, y, canvas.width, canvas.height) % 256
       } catch (e: any) {
-        errorMessages.value.push(e.message)
+        errorMessage.value = e.message
         throw new Error(e.message)
       }
-
       data[i] = value
       data[i + 1] = value
       data[i + 2] = value
@@ -58,25 +54,25 @@ async function draw () {
   }
 
   ctx.putImageData(imageData, 0, 0)
-  await new Promise(resolve => setTimeout(resolve))
-  const endTime = performance.now()
 
-  executionTime.value = Math.floor(endTime - startTime)
+  renderTime.value = Math.floor(performance.now() - startTime)
 }
 
-watch(
-  () => debouncedFExpression.value,
-  () => {
-    try {
-      // @ts-expect-error
-      // eslint-disable-next-line no-new-func
-      f.value = new Function('x', 'y', 'w', 'h', `return ${renderFunction.value}`)
-      draw()
-    } catch (e: any) {
-      errorMessages.value.push(e.message)
-    }
+const render = () => {
+  try {
+    errorMessage.value = ''
+    // @ts-expect-error
+    // eslint-disable-next-line no-new-func
+    f = Function('x', 'y', 'w', 'h', `return ${renderFunction.value}`)
+    draw()
+  } catch (e: any) {
+    console.error('Invalid function:', e)
+    errorMessage.value = e.message
+    return () => 0
   }
-)
+}
+
+watch(() => debouncedFExpression.value, () => render())
 
 function saveImage () {
   const canvas = canvasRef.value
@@ -84,7 +80,7 @@ function saveImage () {
   const downloadLink = document.createElement('a')
 
   if (!canvas) {
-    errorMessages.value.push('Canvas not available')
+    errorMessage.value = 'Canvas not available'
     return
   }
 
@@ -111,15 +107,6 @@ function applySettings () {
     canvasWidth.value = customRenderSize.value.width
   }
 }
-
-watch(
-  () => errorMessages.value.length,
-  () => {
-    if (errorMessages.value.length > 5) {
-      errorMessages.value.shift()
-    }
-  }
-)
 </script>
 
 <template>
@@ -131,13 +118,13 @@ watch(
       <UInput v-model="renderFunction" />
     </div>
     <div class="mt-3 font-mono tracking-tight">
-      render time: {{ executionTime }} ms
+      render time: {{ renderTime }} ms
     </div>
   </UCard>
   <div class="fixed bottom-0 left-0 m-4 max-h-60 w-64 space-y-3">
-    <TransitionGroup name="list">
-      <UAlert v-for="it in errorMessages" :key="it + Date.now()" color="red" :title="it" />
-    </TransitionGroup>
+    <Transition name="fade">
+      <UAlert v-if="errorMessage.length > 0" color="red" :title="errorMessage" />
+    </Transition>
   </div>
   <AppMenu>
     <UButton variant="solid" color="gray" size="lg" icon="i-heroicons-arrow-path" @click="draw()" />
@@ -149,13 +136,13 @@ watch(
 </template>
 
 <style>
-  .list-enter-active,
-  .list-leave-active {
-      transition: all 0.5s ease;
-  }
-  .list-enter-from,
-  .list-leave-to {
-      opacity: 0;
-      transform: translateX(30px);
-  }
+.fade-enter-active,
+.fade-leave-active {
+  @apply transition-opacity duration-200 ease-linear;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  @apply opacity-0;
+}
 </style>
