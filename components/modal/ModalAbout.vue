@@ -7,7 +7,7 @@ const toggleModal = () => {
 
 const content = [
   { text: 'Inspired from', url: 'https://krzysckh.org/prog/bitart.html' },
-  { text: 'Written for blog post', url: 'https://jeffreturns.me/blog/pattern-art-in-math' },
+  { text: 'Written for blog post', url: 'https://jeffreyturns.me/blog/pattern-art-in-math' },
   { text: 'Source code', url: 'https://github.com/jeffreyturns/patrn' }
 ]
 </script>
