@@ -116,6 +116,7 @@ function applySettings () {
     <div class="flex items-center space-x-3">
       <span class="font-mono text-sm">f(x, y, w, h) => </span>
       <UInput v-model="renderFunction" />
+      <UButton v-if="renderFunction.length > 0" variant="ghost" color="gray" icon="i-heroicons-x-mark" @click="renderFunction = ''" />
     </div>
     <div class="mt-3 font-mono tracking-tight">
       render time: {{ renderTime }} ms

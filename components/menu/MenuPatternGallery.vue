@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const gallery = ref(false)
+const slideover = ref(false)
 
 const renderFunction = useRenderFunction()
 
@@ -21,19 +21,33 @@ const list = [
 
 function chooseFunction (func: string) {
   renderFunction.value = func
-  gallery.value = false
+  slideover.value = false
 }
 </script>
 
 <template>
-  <UButton variant="solid" size="lg" :color="gallery ? 'primary' : 'gray'" icon="i-heroicons-photo" @click="gallery = true" />
+  <UButton variant="solid" size="lg" :color="slideover ? 'primary' : 'gray'" icon="i-heroicons-photo" @click="slideover = true" />
 
-  <USlideover v-model="gallery">
-    <div class="flex-1 space-y-3 overflow-auto p-4">
-      <template v-for="func in list" :key="func">
-        <PreviewRenderCanvas :function="func" />
-        <UButton label="Apply" @click="chooseFunction(func)" />
-      </template>
-    </div>
+  <USlideover v-model="slideover">
+    <header class="fixed z-10 flex w-full items-center rounded-tl-2xl border-b border-gray-200 bg-gray-100/75 p-4 backdrop-blur-sm dark:bg-gray-900/75">
+      <h3 class="text-base font-bold">
+        Gallery
+      </h3>
+      <span class="grow" />
+      <UButton variant="ghost" color="gray" icon="i-heroicons-x-mark" @click="slideover = false" />
+    </header>
+
+    <UCard class="flex flex-1 flex-col overflow-auto !rounded-none !bg-transparent py-16 shadow-none" :ui="{ body: { base: 'flex-1' }, ring: '' }">
+      <div class="flex-1 space-y-3">
+        <template v-for="func in list" :key="func">
+          <PreviewRenderCanvas :function="func" />
+          <UButton label="Apply" @click="chooseFunction(func)" />
+        </template>
+      </div>
+    </UCard>
+
+    <footer class="fixed bottom-0 flex w-full space-x-3 rounded-bl-2xl border-t border-gray-200 bg-gray-100/75 px-4 py-3.5 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/75">
+      <UButton size="md" variant="ghost" label="Cancel" @click="slideover = false" />
+    </footer>
   </USlideover>
 </template>

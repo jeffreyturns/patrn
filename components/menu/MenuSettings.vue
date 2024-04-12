@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const menu = ref(false)
+const slideover = ref(false)
 const renderMode = useRenderMode()
 const customRenderSize = useCustomRenderSize()
 
@@ -16,7 +16,7 @@ function changeSettings () {
   renderMode.value = settings.value.renderMode
   customRenderSize.value = settings.value.customRenderSize
 
-  menu.value = false
+  slideover.value = false
 }
 
 function resetSettings () {
@@ -29,21 +29,22 @@ function resetSettings () {
 
 <template>
   <UButton
-    :color="menu ? 'primary' : 'gray'"
+    :color="slideover ? 'primary' : 'gray'"
     variant="solid"
     size="lg"
     icon="i-heroicons-cog-6-tooth"
-    @click="menu = true" />
+    @click="slideover = true" />
 
-  <USlideover v-model="menu" @close="resetSettings">
-    <UCard class="flex flex-1 flex-col" :ui="{ body: { base: 'flex-1' }, ring: '' }">
-      <template #header>
-        <div class="flex items-center text-base font-medium">
-          <span class="w-full font-bold">Settings</span>
-          <UButton variant="ghost" color="gray" icon="i-heroicons-x-mark" @click="menu = false" />
-        </div>
-      </template>
+  <USlideover v-model="slideover" @close="resetSettings">
+    <header class="fixed z-10 flex w-full items-center rounded-tl-2xl border-b border-gray-200 bg-gray-100/75 p-4 backdrop-blur-sm dark:bg-gray-900/75">
+      <h3 class="text-base font-bold">
+        Settings
+      </h3>
+      <span class="grow" />
+      <UButton variant="ghost" color="gray" icon="i-heroicons-x-mark" @click="slideover = false" />
+    </header>
 
+    <UCard class="flex flex-1 flex-col overflow-auto !rounded-none !bg-transparent py-16 shadow-none" :ui="{ body: { base: 'flex-1' }, ring: '' }">
       <div class="flex items-center">
         <span class="w-full">Display Mode:</span>
         <UPopover mode="hover" :popper="{ placement: 'bottom-end', offsetDistance: 4 }">
@@ -73,13 +74,11 @@ function resetSettings () {
           color="red"
           title="Using a large render size can strain your CPU, impacting performance." />
       </div>
-
-      <template #footer>
-        <div class="flex space-x-3">
-          <UButton size="md" label="Apply" @click="$emit('apply', changeSettings())" />
-          <UButton size="md" variant="ghost" label="Cancel" @click="menu = false" />
-        </div>
-      </template>
     </UCard>
+
+    <footer class="fixed bottom-0 flex w-full space-x-3 rounded-bl-2xl border-t border-gray-200 bg-gray-100/75 px-4 py-3.5 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/75">
+      <UButton size="md" label="Apply" @click="$emit('apply', changeSettings())" />
+      <UButton size="md" variant="ghost" label="Cancel" @click="slideover = false" />
+    </footer>
   </USlideover>
 </template>
