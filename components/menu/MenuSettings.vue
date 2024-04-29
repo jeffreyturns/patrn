@@ -36,7 +36,7 @@ function resetSettings () {
     @click="slideover = true" />
 
   <USlideover v-model="slideover" @close="resetSettings">
-    <header class="fixed z-10 flex w-full items-center rounded-tl-2xl border-b border-gray-200 bg-gray-100/75 p-4 backdrop-blur-sm dark:bg-gray-900/75">
+    <header class="fixed z-10 flex w-full items-center rounded-tl-2xl border-b dark:border-gray-800 border-gray-200 bg-gray-100/75 p-4 backdrop-blur-sm dark:bg-gray-900/75">
       <h3 class="text-base font-bold">
         Settings
       </h3>
@@ -76,7 +76,7 @@ function resetSettings () {
       </div>
     </UCard>
 
-    <footer class="fixed bottom-0 flex w-full space-x-3 rounded-bl-2xl border-t border-gray-200 bg-gray-100/75 px-4 py-3.5 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/75">
+    <footer class="fixed bottom-0 flex w-full space-x-3 rounded-bl-2xl border-t dark:border-gray-800 border-gray-200 bg-gray-100/75 px-4 py-3.5 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/75">
       <UButton size="md" label="Apply" @click="$emit('apply', changeSettings())" />
       <UButton size="md" variant="ghost" label="Cancel" @click="slideover = false" />
     </footer>
