@@ -4,72 +4,46 @@ const canvasHeight = ref(100)
 const canvasWidth = ref(100)
 const errorMessage = ref('')
 const renderTime = ref(0)
-
-let f: (x: number, y: number, w: number, h: number) => number
-
 const renderFunction = useRenderFunction()
 const renderMode = useRenderMode()
 const customRenderSize = useCustomRenderSize()
 
 const debouncedFExpression = useDebounce(renderFunction)
 
-function draw () {
-  const startTime = performance.now()
+let worker: Worker
 
-  const canvas = canvasRef.value
-  if (!canvas) {
-    errorMessage.value = 'Canvas not available'
-    return
-  }
+function initWorker() {
+  worker = new Worker(new URL('~/assets/worker/renderer.ts', import.meta.url))
+  worker.onmessage = (event) => {
 
-  const ctx = canvas.getContext('2d', { willReadFrequently: true })
+    const { imageData, time, error } = event.data
 
-  if (!ctx) {
-    errorMessage.value = 'Context not available'
-    return
-  }
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-  const imageData = ctx.createImageData(canvas.width, canvas.height)
-  const data = imageData.data
-
-  const getPixelIndex = (x: number, y: number) => (y * canvas.width + x) * 4
-
-  for (let y = 0; y < canvas.height; y++) {
-    for (let x = 0; x < canvas.width; x++) {
-      const i = getPixelIndex(x, y)
-      let value
-      try {
-        value = f(x, y, canvas.width, canvas.height) % 256
-      } catch (e: any) {
-        errorMessage.value = e.message
-        throw new Error(e.message)
-      }
-      data[i] = value
-      data[i + 1] = value
-      data[i + 2] = value
-      data[i + 3] = 255
+    if (error) {
+      errorMessage.value = error
+    } else {
+      errorMessage.value = ''
     }
+
+    const canvas = canvasRef.value
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    ctx.putImageData(imageData, 0, 0)
+    renderTime.value = time
   }
-
-  ctx.putImageData(imageData, 0, 0)
-
-  renderTime.value = Math.floor(performance.now() - startTime)
 }
 
 const render = () => {
-  try {
-    errorMessage.value = ''
-    // @ts-expect-error
-    // eslint-disable-next-line no-new-func
-    f = Function('x', 'y', 'w', 'h', `return ${renderFunction.value}`)
-    draw()
-  } catch (e: any) {
-    console.error('Invalid function:', e)
-    errorMessage.value = e.message
-    return () => 0
-  }
+  const canvas = canvasRef.value
+  if (!canvas) return
+
+  worker.postMessage({
+    function: renderFunction.value,
+    width: canvas.width,
+    height: canvas.height,
+  })
 }
 
 watch(() => debouncedFExpression.value, () => render())
@@ -90,6 +64,7 @@ function saveImage () {
 }
 
 onMounted(() => {
+  initWorker()
   applySettings()
 })
 
@@ -110,7 +85,7 @@ function applySettings () {
 </script>
 
 <template>
-  <canvas ref="canvasRef" class="h-screen w-screen" :height="canvasHeight" :width="canvasWidth" />
+  <canvas ref="canvasRef" class="h-screen w-screen object-cover" :height="canvasHeight" :width="canvasWidth" />
 
   <UCard class="fixed left-0 top-0 m-4">
     <div class="flex items-center space-x-3">
@@ -128,7 +103,7 @@ function applySettings () {
     </Transition>
   </div>
   <AppMenu>
-    <UButton variant="solid" color="gray" size="lg" icon="i-heroicons-arrow-path" @click="draw()" />
+    <UButton variant="solid" color="gray" size="lg" icon="i-heroicons-arrow-path" @click="render()" />
     <UButton variant="solid" color="gray" size="lg" icon="i-heroicons-arrow-down-tray" @click="saveImage()" />
     <MenuSettings @apply="applySettings()" />
     <MenuPatternGallery />
