@@ -16,7 +16,8 @@ const list = [
   'Math.sin(x / 10) * Math.cos(y / 10) * 35',
   '(((Math.abs(x % 20 - 10) + Math.abs(y % 20 - 10)) < 10) || ((Math.abs(x % 50 - 10) + Math.abs(y % 50 - 10)) > 10)) ? 35 : 120',
   '(((Math.abs(x % 20 - 10) + Math.abs(y % 20 - 10)) < 10) || ((Math.abs(x % 20 - 10) + Math.abs(y % 20 - 10)) > 10)) ? 35 : 120',
-  '(Math.sqrt((x - w / 2) ** 2 + (y - h / 2) ** 2) % 20 < 10) ? (Math.sqrt((x - w / 2) ** 2 + (y - h / 2) ** 2) / Math.sqrt(w ** 2 + h ** 2) * 120) : 0'
+  '(Math.sqrt((x - w / 2) ** 2 + (y - h / 2) ** 2) % 20 < 10) ? (Math.sqrt((x - w / 2) ** 2 + (y - h / 2) ** 2) / Math.sqrt(w ** 2 + h ** 2) * 120) : 0',
+  'Math.abs(Math.sin(Math.PI * (x/w + Math.sin(y/200)/5)) * Math.cos(Math.PI * (y/h + Math.cos(x/200)/5)) * 128 + ((x+y) % 32) % 64) % 256'
 ]
 
 function chooseFunction (func: string) {

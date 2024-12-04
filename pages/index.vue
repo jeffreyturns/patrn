@@ -31,6 +31,8 @@ function initWorker() {
     if (!ctx) return
 
     ctx.putImageData(imageData, 0, 0)
+
+    ctx.imageSmoothingEnabled = true
     renderTime.value = time
   }
 }
