@@ -12,7 +12,20 @@ const debouncedFExpression = useDebounce(renderFunction)
 
 let worker: Worker
 
-function initWorker() {
+onMounted(async () => {
+  // Check if we have `?f={code}` in the URL
+  const urlParams = new URLSearchParams(window.location.search)
+  const fParam = urlParams.get('f')
+  await initWorker()
+  applySettings()
+
+  if (fParam) {
+    renderFunction.value = fParam
+    render()
+  }
+})
+
+async function initWorker() {
   worker = new Worker(new URL('~/assets/worker/renderer.ts', import.meta.url))
   worker.onmessage = (event) => {
 
@@ -64,11 +77,6 @@ function saveImage () {
   downloadLink.download = 'canvas_' + timestamp + '.png'
   downloadLink.click()
 }
-
-onMounted(() => {
-  initWorker()
-  applySettings()
-})
 
 function applySettings () {
   if (renderMode.value === 'preview') {

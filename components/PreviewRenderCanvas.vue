@@ -7,6 +7,12 @@
     <DevOnly>
       <span class="text-green-600 dark:text-green-200">- {{ renderTime }}ms</span>
     </DevOnly>
+    <DevOnly>
+      <NuxtLink target="_blank" :to="`/?f=${encodeURIComponent(props.function)}`"
+        class="text-blue-600 dark:text-blue-400 hover:underline">
+        Open in...
+      </NuxtLink>
+    </DevOnly>
   </div>
 </template>
 
